@@ -45,7 +45,11 @@ func (bc *Blockchain) AddMempoolTransaction(rawTx []byte) error {
 		return errors.New("Too much gas")
 	}
 
-	bc.Mempool.queue.Insert(pb, priority)
+	bhash := sha256.Sum256(rawTx)
+	hash := bhash[:]
+
+	bc.blockDb.Put(hash, rawTx, nil)
+	bc.Mempool.queue.Insert(hash, priority)
 	return nil
 }
 
